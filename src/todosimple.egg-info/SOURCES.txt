@@ -1,0 +1,14 @@
+setup.py
+src/todosimple/__init__.py
+src/todosimple/app.py
+src/todosimple/resource.py
+src/todosimple.egg-info/PKG-INFO
+src/todosimple.egg-info/SOURCES.txt
+src/todosimple.egg-info/dependency_links.txt
+src/todosimple.egg-info/entry_points.txt
+src/todosimple.egg-info/not-zip-safe
+src/todosimple.egg-info/requires.txt
+src/todosimple.egg-info/top_level.txt
+src/todosimple/tests/__init__.py
+src/todosimple/tests/test_todosimple.py
+src/todosimple/tests/tests.py
