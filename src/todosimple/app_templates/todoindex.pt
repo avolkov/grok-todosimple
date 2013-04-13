@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title tal:content="context/title">To-Do list manager</title>
+    <link rel="stylesheet" type="text/css" tal:attributes="href static/styles.css" />
+    <script tal:define="url python:view.url('settitle')" tal:content="string:settitleurl='${url}';;"></script>
+    <script type="text/javascript" tal:attributes="src static/todo.js"></script>
+</head>
+<body onload="hideControls()">
+    <h1 id="apptitle" onclick="editTitle();" tal:content="context/title">To-Do list manager</h1>
+    <h2>Here you can add new lists and check off all the items that you complete.</h2>
+    <tal:block repeat="todolist context/values">
+        <div class="todolist">
+        <form method="post" tal:attributes="action python:view.url(todolist,'updateitems')">
+            <fieldset>
+                <legend><span tal:content="todolist/title">title</span>
+                    <a tal:define="url python:view.url('deletelist')" tal:attributes="href string:${url}?list=${todolist/__name__}"><img border="0" tal:attributes="src static/bin_closed.png" /></a>
+                </legend>
+                <p tal:content="todolist/description">description</p>
+                <div tal:repeat="item todolist/values" tal:attributes="class python:item.checked and 'done' or 'pending';id string:div_item_${todolist/__name__}_${item/__name__}">
+                    <input type="checkbox" name="items:list" tal:define="check_url python:view.url(item,'check');" tal:attributes="checked item/checked;onclick string:getRequest('${check_url}',processReqChange)"/>
+                    <span tal:content="item/description"></span>
+                    <a tal:define="url python:view.url(todolist,'deleteitem')" tal:attributes="href string:${url}?item=${item/__name__}"><img border="0" tal:attributes="src static/bin_closed.png" /></a><br/>
+                </div>
+                <input type="submit" class="update_button" name="update_list" value="Update list"/>
+            </fieldset>
+        </form>
+        <form method="post" tal:attributes="action python:view.url(todolist,'additem')">
+            <label for="description" tal:attributes="onclick string:toggleAddControls('add_controls_${repeat/todolist/index}');;this.form.description.focus();">New item</label><br/>
+            <div class="controls" tal:attributes="id string:add_controls_${repeat/todolist/index}">
+                <input type="text" size="60" name="description"><br/>
+                <input type="submit" class="new_button" name="new_item" value="Add to list"/>
+            </div>
+        </form>
+    </tal:block>
+    <form class="add" method="post" tal:attributes="action python:view.url('addlist')">
+        <fieldset>
+            <legend onclick="toggleAddControls('new_list_controls');this.form.title.focus();">Create new list</legend>
+            <div class="controls" id="new_list_controls">
+                <label for="title">Title:</label>
+                <input type="text" name="title" size="40"/><br/>
+                <label for="description">Description:</label><br/>
+                <textarea name="description" rows="3" cols="50"></textarea><br/>
+                <input type="submit" class="new_button" name="new_list" value="Create"/>
+            </div>
+        </fieldset>
+    </form>
+</body>
+</html>

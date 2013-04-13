@@ -1,0 +1,43 @@
+<html>
+<head>
+    <title>To-Do list manager</title>
+    <link rel="stylesheet" type="text/css" tal:attributes="href static/styles.css" />
+    <script type="text/javascript" tal:attributes="src static/todo.js"></script>
+</head>
+<body onload="hideControls()">
+    <h1>To-Do list manager</h1>
+    <h2>Here you can add new lists and check off all the items that you complete.</h2>
+    <tal:block repeat="todolist context/todolists">
+        <form class="todolist" method="post" tal:attributes="action view/url">
+            <fieldset>
+                <legend tal:content="todolist/title">title</legend> 
+                <p tal:content="todolist/description">description</p>
+                <div tal:repeat="item todolist/items" tal:attributes="class python:item['checked'] and 'done' or 'pending';id string:div_item_${repeat/todolist/index}_${repeat/item/index}">
+                    <input type="checkbox" tal:define="check_url python:view.url('check');" tal:attributes="name string:item_${repeat/item/index};checked item/checked;onclick string:checkItem('${check_url}?list_index=${repeat/todolist/index}&item_index=${repeat/item/index}')"/>
+                    <span tal:content="item/description"></span>
+                    <input type="image" tal:attributes="name string:delete_${repeat/item/index};src static/bin_closed.png" value="Delete"/><br/>
+                </div>
+                <input type="hidden" name="list_index" tal:attributes="value repeat/todolist/index"/>
+                <input type="submit" class="update_button" name="update_list" value="Update list"/><br/>
+                <label for="item_description" tal:attributes="onclick string:toggleAddControls('add_controls_${repeat/todolist/index}');">New item</label><br/>
+                <div class="controls" tal:attributes="id string:add_controls_${repeat/todolist/index}">
+                    <input type="text" size="60" name="item_description"><br/>
+                    <input type="submit" class="new_button" name="new_item" value="Add to list"/>
+                </div>
+            </fieldset>
+        </form>
+    </tal:block>
+    <form class="add" method="post" tal:attributes="action view/url">
+        <fieldset>
+            <legend onclick="toggleAddControls('new_list_controls');">Create new list</legend>
+            <div class="controls" id="new_list_controls">
+                <label for="list_title">Title:</label>
+                <input type="text" name="list_title" size="40"/><br/>
+                <label for="list_description">Description:</label><br/>
+                <textarea name="list_description" rows="3" cols="50"></textarea><br/>
+                <input type="submit" class="new_button" name="new_list" value="Create"/>
+            </div>
+        </fieldset>
+    </form>
+</body>
+</html>

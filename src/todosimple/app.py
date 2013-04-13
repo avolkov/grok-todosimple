@@ -32,7 +32,7 @@ class Project(grok.Container):
 class AddProjectForm(grok.AddForm):
     grok.context(Todo)
     grok.name('index')
-    form_fields = grok.AutoFields(IProject)
+    form_fields = grok.AutoFields(IProject).omit('next_id')
     label = "To begin, add a new project"
 
     @grok.action('Add Project')
@@ -42,4 +42,18 @@ class AddProjectForm(grok.AddForm):
         id = str(self.context.next_id)
         self.context.next_id += 1
         self.context[id] = project
-        return self.redirect(self.url(self.context[id]))
+        new_url = self.url(self.context[id])
+        return self.redirect(new_url)
+
+class ProjectView(grok.View):
+    grok.context(Project)
+    grok.name('index')
+    def render(self):
+        ctx = self.context
+        outstr = """
+Title: %s\n
+Kind: %s\n
+Description: %s\n
+next_id: %d\n
+""" % (ctx.title, ctx.kind, ctx.description, ctx.next_id) 
+        return outstr
