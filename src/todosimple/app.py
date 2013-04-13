@@ -7,6 +7,9 @@ def setup_widgets(self, ignore_request=False):
     self.widgets['title'].displayWidth = 50
     self.widgets['description'].height = 5
 
+def check_title(value):
+    """Add title value length constraint"""
+    return len(value) > 2
 
 class Todo(grok.Application, grok.Container):
     def __init__(self):
@@ -18,11 +21,20 @@ class Todo(grok.Application, grok.Container):
         del self[project]
 
 class IProject(interface.Interface):
-    title = schema.TextLine(title=u'Title', required=True)
+    title = schema.TextLine(title=u'Title',
+                            required=True,
+                            constraint=check_title)
     kind = schema.Choice(title=u'Kind of project',
                          values=['personal', 'business'])
     description = schema.Text(title=u'Description', required=False)
     next_id = schema.Int(title=u'Next id', default=0)
+    extra_id = schema.Int(title=u"Extra id", default=42)
+
+    @interface.invariant
+    def businessNeedsDescription(project):
+        if project.kind == 'business' and not project.description:
+            raise interface.Invalid(
+                        "Business projects require description")
 
 class Project(grok.Container):
     grok.implements(IProject)
@@ -40,7 +52,7 @@ class Project(grok.Container):
 class AddProjectForm(grok.AddForm):
     grok.context(Todo)
     grok.name('index')
-    form_fields = grok.AutoFields(IProject).omit('next_id')
+    form_fields = grok.AutoFields(IProject).omit('extra_id')
     label = "To begin, add a new project"
     setUpWidgets = setup_widgets
     @grok.action('Add Project')
