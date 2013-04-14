@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <title tal:content="context/title">To-Do List manager</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      tal:attributes="href static/styles.css" />
+  </head>
+  <body>
+    <div id="appheader">
+      <form id="search"
+        tal:attributes="action python:view.url('search')">
+        <input type="text" name="query"
+          tal:attributes="value request/query|nothing">
+        <input class='new_button' type='submit' value='search'>
+      </form>
+      <h1 id="apptitle"
+        tal:content="string:${context/title}: search">
+        To-Do list manager
+      </h1>
+    </div>
+    <p class="create">
+      <a tal:attributes="href python:view.url(context)">
+        Go back to main page
+      </a>
+    </p>
+    <h2 tal:condition="not:view/results|nothing">
+      There were no results
+    </h2>
+    <div class="projects" tal:condition="view/results|nothing">
+      <h2>These are the results for
+        "<i tal:content='request/query'></i>":
+      </h2>
+      <table>
+        <tr>
+          <th>Project Name</th>
+          <th>Kind</th>
+          <th>Description</th>
+          <th>Created On</th>
+          <th>Last modified</th>
+          <th>Owner</th>
+        </tr>
+        <tr tal:repeat="project view/results">
+          <td>
+            <a
+              tal:attributes="href python:view.url(project)"
+              tal:content="project/title">
+            </a>
+          </td>
+          <td tal:content="project/kind">type</td>
+          <td tal:content="project/description">description</td>
+          <td tal:content="project/creation_date">creation date</td>
+          <td tal:content="project/modification_date">modification date</td>
+          <td tal:content="project/creator">creator</td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
