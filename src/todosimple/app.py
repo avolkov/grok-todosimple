@@ -1,6 +1,10 @@
 import grok
 from todosimple import resource
+
 from zope import interface, schema
+
+from zope.catalog.interfaces import ICatalog
+from zope.component import getUtility
 
 def setup_widgets(self, ignore_request=False):
     super(self.__class__, self).setUpWidgets(ignore_request)
@@ -84,3 +88,18 @@ Description: %s\n
 next_id: %d\n
 """ % (ctx.title, ctx.kind, ctx.description, ctx.next_id) 
         return outstr
+
+class ProjectIndexes(grok.Indexes):
+    """Grok indexer class"""
+    grok.site(ITodo)
+    grok.context(IProject)
+    project_title = grok.indext.Text()
+
+class TodoSearch(grok.View):
+    grok.context(Todo)
+    grok.name('search')
+
+    def update(self, query):
+        if query:
+            catalog = getUtility(ICatalog)
+            self.results = catalog.searchResults(title=query)
