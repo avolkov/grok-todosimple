@@ -1,4 +1,98 @@
-/* This is a silly style sheet solely used for demonstrating fanstatic. */
 body {
-  background-color: #eee;
+    background-color: #e0e0e0;
+    padding: 15px;
+}
+
+h1 {
+    background-color : #223388;
+    font-size: 1.6em;
+    color : #ffcc33;
+    padding : 10px;
+    margin: 0px;
+}
+
+h2 {
+    background-color: white;
+    margin: 0px;
+    padding: 10px;
+    font-size: 0.8em;
+}
+
+.todolist {
+    background-color: white;
+    padding: 10px;
+    margin: 0px;
+}
+
+.todolist fieldset {
+    border: none;
+    padding: 0px;
+}
+
+.todolist legend {
+    color: #223388;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.todolist p {
+    padding: 0px;
+    margin: 2px 0px 5px 3px;
+    color: gray;
+    font-size: 0.8em;
+}
+
+.todolist label {
+    font-size: 0.75em;
+    color: red;
+    text-decoration: underline;
+}
+
+.pending span {
+    font-size: 0.8em;
+}
+
+.done span {
+    font-size: 0.8em;
+    color: gray;
+    text-decoration: line-through;
+}
+
+.add {
+    border: none;
+    padding: 10px;
+    margin: 0px;
+    background-color: #ffffaa;
+}
+
+.add fieldset {
+    border: 0px;
+}
+
+.add legend {
+    color: #223388;
+    font-weight: bold;
+    font-size: 0.9em;
+    text-decoration: underline;
+}
+
+.add label {
+    font-size: 0.75em;
+}
+
+.new_button {
+    color: white;
+    font-size: 0.6em;
+    background-color: #60a0e0;
+    border: 1px solid;
+    border-color: #223388;
+}
+
+.update_button {
+    margin: 5px 0px 12px 5px;
+    color: #223388;
+    font-size: 0.6em;
+    background-color: #ffcc33;
+    border: 1px solid;
+    border-color: #223388;
 }
