@@ -15,11 +15,19 @@ def check_title(value):
     """Add title value length constraint"""
     return len(value) > 2
 
+class IMetadata(interface.Interface):
+    creator = schema.TextLine(title=u'Creator')
+    creation_date = schema.Datetime(title=u'Creation date')
+    modification_date = schema.Datetime(title=u'Modification date')
+
+class ITodo(interface.Interface):
+    title = schema.TextLine(title=u'Title', required=True)
+    next_id = schema.Int(title=u'Next id', default=0)
+
 class Todo(grok.Application, grok.Container):
-    def __init__(self):
-        super(Todo, self).__init__()
-        self.title = 'To-Do list manager'
-        self.next_id = 0
+    grok.implements(ITodo)
+    title = u'To-Do list manager'
+    next_id = 0
 
     def deleteProject(selfself, project):
         del self[project]
@@ -32,7 +40,6 @@ class IProject(interface.Interface):
                          values=['personal', 'business'])
     description = schema.Text(title=u'Description', required=False)
     next_id = schema.Int(title=u'Next id', default=0)
-    extra_id = schema.Int(title=u"Extra id", default=42)
 
     @interface.invariant
     def businessNeedsDescription(project):
@@ -48,7 +55,7 @@ class Project(grok.Container):
     def addList(self, title, description):
         id = str(self.next_id)
         self.next_id = self.next_id + 1
-        self.id = TodoList(title, description)
+        self[id] = TodoList(title, description)
 
     def deleteList(self, list):
         del self[list]
@@ -59,6 +66,7 @@ class AddProjectForm(grok.AddForm):
     form_fields = grok.AutoFields(IProject)
     label = "To begin, add a new project"
     setUpWidgets = setup_widgets
+
     @grok.action('Add Project')
     def add(self, **data):
         project = Project()
