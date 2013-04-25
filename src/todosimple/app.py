@@ -41,22 +41,22 @@ class IProject(interface.Interface):
                         "Business projects require description")
 
 class Project(grok.Container):
-    grok.implements(IProject)
+    grok.implements(IProject, IMetadata)
+    next_id = 0
+    description = u''
 
     def addList(self, title, description):
         id = str(self.next_id)
-        self.next_id += 1
-        self[id] = TodoList(title, description)
+        self.next_id = self.next_id + 1
+        self.id = TodoList(title, description)
 
     def deleteList(self, list):
         del self[list]
 
-
-
 class AddProjectForm(grok.AddForm):
     grok.context(Todo)
     grok.name('index')
-    form_fields = grok.AutoFields(IProject).omit('extra_id')
+    form_fields = grok.AutoFields(IProject)
     label = "To begin, add a new project"
     setUpWidgets = setup_widgets
     @grok.action('Add Project')
@@ -93,7 +93,7 @@ class ProjectIndexes(grok.Indexes):
     """Grok indexer class"""
     grok.site(ITodo)
     grok.context(IProject)
-    project_title = grok.indext.Text()
+    project_title = grok.index.Text(attribute='title')
 
 class TodoSearch(grok.View):
     grok.context(Todo)
