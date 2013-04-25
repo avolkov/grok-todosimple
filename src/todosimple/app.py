@@ -1,3 +1,4 @@
+from datetime import datetime
 import grok
 from todosimple import resource
 
@@ -74,6 +75,9 @@ class AddProjectForm(grok.AddForm):
         id = str(self.context.next_id)
         self.context.next_id += 1
         self.context[id] = project
+        project.creator = self.request.principal.title
+        project.creation_date = datetime.now()
+        project.modification_date = datetime.now()
         new_url = self.url(self.context[id])
         return self.redirect(new_url)
 
