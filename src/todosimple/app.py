@@ -33,6 +33,54 @@ class Todo(grok.Application, grok.Container):
     def deleteProject(selfself, project):
         del self[project]
 
+class ITodoList(interface.Interface):
+    title = schema.TextLine(title=u"Title",
+                            required=True, constraint=check_title)
+    description = schema.Text(title=u'Description', required=False)
+    next_id = schema.Int(title=u'Next id', default=0)
+
+class TodoList(grok.Container):
+    grok.implements(ITodoList, IMetadata)
+    next_id = 0
+    description = u''
+
+    def __init__(self, title, description):
+        super(TodoList, self).__init__()
+        self.title = title
+        self.description = description
+        self.next_id = 0
+
+    def addItem(self, description):
+        id = str(self.next_id)
+        self.next_id = self.next_id + 1
+        self[id] = TodoItem(description)
+
+    def deleteItem(self, item):
+        del self[item]
+
+    def updateItems(self, items):
+        for name,item in self.items():
+            if name in items:
+                self[item].checked = True
+            else:
+                self[item].checked = False
+
+class ITodoItem(interface.Interface):
+    description = schema.Text(title=u'Description', required=True)
+    checked = schema.Bool(title=u'Checked', default=False)
+
+class TodoItem(grok.Model):
+    grok.implements(ITodoItem, IMetadata)
+    checked = False
+
+    def __init__(self, item_description):
+        super(TodoItem, self).__init__()
+        self.description = item_description
+        self.checked = False
+
+    def toggleCheck(self):
+        self.checked = not self.check
+
 class IProject(interface.Interface):
     title = schema.TextLine(title=u'Title',
                             required=True,
