@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <title tal:content="context/title">Todo List manager</title>
+    <link rel="stylesheet"
+      type="text/css"
+      tal:attributes="href static/styles.css" 
+    />
+  </head>
+  <body>
+    <div id="appheader">
+      <form
+        id="search"
+        tal:attributes="action python:view.url('search')">
+        <input type="text" name="query" />
+        <input class="new_button" type="submit" value="search" />
+      </form>
+      <h1 id="apptitle" tal:content="context/title">Todo List manager</h1>
+    </div>
+    <p class="create"><a href="add">Create a new project</a></p>
+    
+    <div class='projects'
+      tal:define="projects context/values"
+      tal:condition="projects">
+      <h2>These are your available projects</h2>
+      <table>
+        <tr>
+          <th>Project name</th>
+          <th>Kind</th>
+          <th>Description</th>
+          <th>Created on</th>
+          <th>Last modified</th>
+          <th>Owner</th>
+          <th>Delete</th>
+        </tr>
+        <tr tal:repeat="project context/values">
+          <td>
+            <a
+              href=""
+              tal:attributes="href python:view.url(project)"
+              tal:content="project/title">
+              title
+            </a>
+          </td>
+          <td tal:content="project/kind">kind</td>
+          <td tal:content="project/description">description</td>
+          <td tal:content="project/creation_date">creation_date</td>
+          <td tal:content="project/modification_date">modification_date</td>
+          <td tal:content="project/creator">creator</td>
+          <td>
+            <a
+              tal:define="url python:view.url('deleteproject')"
+              tal:attributes="href string:${url}?project=${project/__name__}"
+            >
+              <img 
+                border="0"
+                tal:attributes="src static/bin_closed.png">
+            </a>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

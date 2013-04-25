@@ -111,7 +111,7 @@ class Project(grok.Container):
 
 class AddProjectForm(grok.AddForm):
     grok.context(Todo)
-    grok.name('index')
+    grok.name('add')
     form_fields = grok.AutoFields(IProject)
     label = "To begin, add a new project"
     setUpWidgets = setup_widgets
@@ -163,3 +163,7 @@ class TodoSearch(grok.View):
         if query:
             catalog = getUtility(ICatalog)
             self.results = catalog.searchResults(title=query)
+
+class DashBoard(grok.View):
+    grok.context(Todo)
+    grok.name('index')
