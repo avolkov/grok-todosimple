@@ -16,6 +16,18 @@ def check_title(value):
     """Add title value length constraint"""
     return len(value) > 2
 
+class ISearchable(interface.Interface):
+    title = interface.Attribute('title')
+    kind = interface.Attribute('kind')
+    description =  interface.Attribute('description')
+    creator = interface.Attribute('creator')
+    creation_date =  interface.Attribute('creation date')
+    modification_date = interface.Attribute('modification date')
+    checked = interface.Attribute('checked')
+
+    def searchableText():
+        """return concatenated string with all text fields to search"""
+
 class IMetadata(interface.Interface):
     creator = schema.TextLine(title=u'Creator')
     creation_date = schema.Datetime(title=u'Creation date')
@@ -40,15 +52,19 @@ class ITodoList(interface.Interface):
     next_id = schema.Int(title=u'Next id', default=0)
 
 class TodoList(grok.Container):
-    grok.implements(ITodoList, IMetadata)
+    grok.implements(ITodoList, IMetadata, ISearchable)
     next_id = 0
     description = u''
+    conent_type = 'list'
 
-    def __init__(self, title, description):
+    def __init__(self, title, description, creator):
         super(TodoList, self).__init__()
         self.title = title
         self.description = description
         self.next_id = 0
+        self.creator = creator
+        self.creation_date = datetime.now()
+        self.modification_date = datetime.now()
 
     def addItem(self, description):
         id = str(self.next_id)
@@ -64,6 +80,9 @@ class TodoList(grok.Container):
                 self[item].checked = True
             else:
                 self[item].checked = False
+
+    def searcheableText(self):
+        return self.title+self.description
 
 class ITodoItem(interface.Interface):
     description = schema.Text(title=u'Description', required=True)
@@ -100,7 +119,7 @@ class IProject(interface.Interface):
                         "Business projects require description")
 
 class Project(grok.Container):
-    grok.implements(IProject, IMetadata)
+    grok.implements(IProject, IMetadata, ISearchable)
     next_id = 0
     description = u''
 
@@ -158,7 +177,13 @@ next_id: %d\n
 class ProjectIndexes(grok.Indexes):
     """Grok indexer class"""
     grok.site(ITodo)
-    grok.context(IProject)
+    grok.context(ISearchable)
+    title = grok.index.Text()
+    description = grok.index.Text()
+    creator = grok.index.Text()
+    modification_date = grok.index.Text()
+    creation_date = grok.index.Text()
+    checked = grok.index.Text()
     searchableText = grok.index.Text()
 
 class TodoSearch(grok.View):
