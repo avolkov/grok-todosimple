@@ -154,6 +154,7 @@ class ProjectIndexes(grok.Indexes):
     grok.site(ITodo)
     grok.context(IProject)
     project_title = grok.index.Text(attribute='title')
+    description = grok.index.Text()
 
 class TodoSearch(grok.View):
     grok.context(Todo)
@@ -162,7 +163,8 @@ class TodoSearch(grok.View):
     def update(self, query):
         if query:
             catalog = getUtility(ICatalog)
-            self.results = catalog.searchResults(title=query)
+            self.results = catalog.searchResults(project_title=query,
+                                                 description=query)
 
 class DashBoard(grok.View):
     grok.context(Todo)
