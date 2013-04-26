@@ -90,6 +90,9 @@ class IProject(interface.Interface):
     description = schema.Text(title=u'Description', required=False)
     next_id = schema.Int(title=u'Next id', default=0)
 
+    def searchableText():
+        """Return concatenated string with all text fields to search"""
+
     @interface.invariant
     def businessNeedsDescription(project):
         if project.kind == 'business' and not project.description:
@@ -108,6 +111,9 @@ class Project(grok.Container):
 
     def deleteList(self, list):
         del self[list]
+
+    def searchableText(self):
+        return self.title+self.description
 
 class AddProjectForm(grok.AddForm):
     grok.context(Todo)
@@ -153,8 +159,7 @@ class ProjectIndexes(grok.Indexes):
     """Grok indexer class"""
     grok.site(ITodo)
     grok.context(IProject)
-    project_title = grok.index.Text(attribute='title')
-    description = grok.index.Text()
+    searchableText = grok.index.Text()
 
 class TodoSearch(grok.View):
     grok.context(Todo)
@@ -163,8 +168,7 @@ class TodoSearch(grok.View):
     def update(self, query):
         if query:
             catalog = getUtility(ICatalog)
-            self.results = catalog.searchResults(project_title=query,
-                                                 description=query)
+            self.results = catalog.searchResults(searchableText=query)
 
 class DashBoard(grok.View):
     grok.context(Todo)
